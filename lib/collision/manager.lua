@@ -16,7 +16,7 @@ function class.init(s,cell_size,onCollision,endCollision)
 end
 
 function class:addShape(shape,type)
-	self.shapes[shape] = {shape = shape,isActive = type == 'active' and true or type == 'passive' and false or true}
+	self.shapes[shape] = {shape = shape,isActive = type ~= 'passive'}
 end
 
 function class:removeShape(shape)
