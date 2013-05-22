@@ -22,3 +22,7 @@ end
 function string:stripExcessSlash()
 	return self:gsub('[\\/]+','/'):match('^/?(.*)')
 end
+
+function string:getFolderPath()
+	return self:match('^(.-)[^%.\\/]*$')
+end
