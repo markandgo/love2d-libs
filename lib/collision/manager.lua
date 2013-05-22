@@ -36,7 +36,7 @@ function class:isActive(shape)
 	return self.shapes[shape].isActive
 end
 
-function class:update()
+function class:update(dt)
 	local gd          = self.getDimensions
 	local oc          = self.onCollision
 	local ec          = self.endCollision
@@ -66,7 +66,7 @@ function class:update()
 				local hit,dx,dy = test_case[shape_type][othershape_type](shape,othershape:unpack())
 								
 				if hit then
-					if oc then oc(shape,othershape,dx,dy) end
+					if oc then oc(dt,shape,othershape,dx,dy) end
 					collided[shape][othershape] = true
 					
 					if clu[shape] then clu[shape][othershape] = nil end
@@ -84,7 +84,7 @@ function class:update()
 		
 		for shape,collided in pairs(separatedPairs) do
 			for othershape in pairs(collided) do
-				ec(shape,othershape)
+				ec(dt,shape,othershape)
 			end
 		end
 		
