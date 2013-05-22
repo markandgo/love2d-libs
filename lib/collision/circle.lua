@@ -1,6 +1,7 @@
 local draw = love.graphics.circle
 local min  = math.min
 local max  = math.max
+local abs  = math.abs
 
 local circle = {}
 circle.__index = circle
@@ -18,6 +19,55 @@ end
 circle.bbox = function(self)
 	local x,y,r = self.x,self.y,self.radius
 	return x-r,y-r,r*2,r*2
+end
+
+circle.testBox = function(self,bx,by,bw,bh)
+	local x,y,r = circle.unpack(self)
+
+	local bx2,by2 = bx+bw,by+bh
+	
+	local near_x,near_y = x,y
+	
+	if x < bx then near_x = bx 
+	elseif x > bx2 then near_x = bx2 end
+	
+	if y < by then near_y = by 
+	elseif y > by2 then near_y = by2 end
+	
+	if near_x == x and near_y == y then
+		local move_x,move_y
+		
+		local left_dx,right_dx = x-bx, x-bx2
+		if abs(left_dx) < abs(right_dx) then
+			move_x = left_dx+r
+		else
+			move_x = right_dx-r
+		end
+		
+		local top_dy,bot_dy = y-by, y-by2
+		if abs(top_dy) < abs(bot_dy) then
+			move_y = top_dy+r
+		else
+			move_y = bot_dy-r
+		end
+		
+		if abs(move_x) < abs(move_y) then return true,-move_x,0 end
+		return true,0,-move_y
+	end
+	
+	local dx,dy = near_x-x, near_y-y
+	local center_to_closest   = dx*dx+dy*dy
+	
+	if not (center_to_closest < r*r) then return false end
+	
+	center_to_closest = center_to_closest^.5
+	
+	local ux,uy = dx/center_to_closest, dy/center_to_closest
+	local rx,ry = ux*r,uy*r
+	
+	local move_x,move_y = rx-dx, ry-dy
+	
+	return true,-move_x,-move_y
 end
 
 circle.testCircle = function(self,circle)
