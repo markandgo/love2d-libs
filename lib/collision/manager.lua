@@ -54,7 +54,7 @@ function class:update()
 	end
 	
 	for shape in pairs(active) do
-		local neighbors   = hash:getNeighbors(shape)
+		local neighbors     = hash:getNeighbors(shape)
 		checkedPairs[shape] = {}
 		collided[shape]     = {}
 		local shape_type    = shape:type()
