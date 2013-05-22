@@ -3,17 +3,16 @@ local min  = math.min
 local max  = math.max
 local abs  = math.abs
 
-local circle = {}
-circle.__index = circle
+local circle = class 'circle'
 
-circle.new = function(x,y,r)
+circle.init = function(self,x,y,r)
 	local a = 
 	{
 		x       = x,
 		y       = y,
 		radius  = r,
 	}
-	return setmetatable(a,circle)
+	return a
 end
 
 circle.bbox = function(self)

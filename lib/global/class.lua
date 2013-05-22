@@ -46,7 +46,7 @@ end
 local function new(name)
 	local class = {__type = name}
 	class.__index = class
-	class.new = base.__call
+	class.new = function(...) return base.__call(class,...) end
 	return setmetatable(class,base)
 end
 

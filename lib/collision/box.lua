@@ -1,17 +1,16 @@
 local abs   = math.abs
 local rect  = love.graphics.rectangle
 
-local box  = {__type = 'box'}
-box.__index= box
+local box  = class 'box'
 
-function box.new(x,y,w,h)
+function box:init(x,y,w,h)
 	assert(w > -1 and h > -1, 'Width and height must be non-negative!')
 	self       = {}
 	self.x     = x
 	self.y     = y
 	self.width = w
 	self.height= h
-	return setmetatable(self,box)
+	return self
 end
 
 function box:setPosition(x,y)
