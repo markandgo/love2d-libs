@@ -8,6 +8,10 @@ include = function(path,moduleTable)
 		return require(path)
 	end
 	
+	if lfs.isFile(path..'/init.lua') then
+		return require(path)
+	end
+	
 	moduleTable     = moduleTable or {}
 	local filelist  = lfs.enumerate(path)
 	for i = 1,#filelist do
