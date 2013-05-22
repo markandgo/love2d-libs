@@ -4,6 +4,8 @@ local path  = (...):match('^.+[%.\\/]') or ''
 
 local grid  = require (path..'grid')
 
+local DEFAULT_HASH_SIZE = 100
+
 local function toGrid(x,y,gw,gh)
 	return ceil(x/gw),ceil(y/gh)
 end
@@ -38,10 +40,12 @@ local hash  = {}
 hash.__index= hash
 
 function hash.new(width,height)
+	width = width or DEFAULT_HASH_SIZE
+	height= height or width
 	assert(width > 0 and (not height or height > 0),'Cell dimensions must be non-zero!')
 	local self  = grid.new()
 	self.width  = width
-	self.height = height or width
+	self.height = height
 	self.boxes  = {}
 	return setmetatable(self,hash)
 end
@@ -64,6 +68,10 @@ function hash:unsetBox(name)
 	removeFromGrid(self,name)
 	self.boxes[name] = nil
 	return self
+end
+
+function hash:getCellSize()
+	return self.width,self.height
 end
 
 function hash:getNeighbors(name)

@@ -19,8 +19,21 @@ function class:addShape(shape,isPassive)
 	self.shapes[shape] = {shape = shape,isActive = not isPassive}
 end
 
+function class:removeShape(shape)
+	self.shapes[shape] = nil
+	self.spatialhash:unsetBox(shape)
+end
+
+function class:clear()
+	class.init(self, self.spatialhash:getCellSize(), self.onCollision, self.endCollision)
+end
+
 function class:setActive(shape,isActive)
 	self.shapes[shape].isActive = isActive
+end
+
+function class:isActive(shape)
+	return self.shapes[shape].isActive
 end
 
 function class:update()
