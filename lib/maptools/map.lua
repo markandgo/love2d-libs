@@ -7,6 +7,8 @@ local ceil  = math.ceil
 local sqrt  = math.sqrt
 local floor = math.floor
 local lg    = love.graphics
+local sbadd = love.graphics.newGeometry and 'addg' or 'addq'
+local sbset = love.graphics.newGeometry  and 'setg' or 'setq'
 
 local dummyquad = lg.newQuad(0,0,1,1,1,1)
 
@@ -31,7 +33,7 @@ local preallocateSB = function(self,sbx,sby)
 				index   = nil,
 				property= nil,
 				sb      = sb,
-				id      = sb:addq(dummyquad,0,0,0,0),
+				id      = sb[sbadd](sb,dummyquad,0,0,0,0),
 				x       = self.tw*(x-1) + ox,
 				y       = self.th*(y-1) + oy,
 				angle   = 0,
@@ -45,7 +47,7 @@ local preallocateSB = function(self,sbx,sby)
 end
 
 local setQuad = function(self,t)
-	t.sb:setq( t.id,t.quad, t.x+self.hw,t.y+self.hh, t.angle, t.sx,t.sy, self.hw,self.hh)	
+	t.sb[sbset](t.sb, t.id,t.quad, t.x+self.hw,t.y+self.hh, t.angle, t.sx,t.sy, self.hw,self.hh)	
 end
 
 local getQuad = function(self,index)
@@ -89,9 +91,17 @@ function map.new(image,atlas, tw,th)
 	return setmetatable(self,map)
 end
 
-function map:export()
+function map:export(dimension,reverse)
+	assert(dimension == 1 or dimension == 2,'Expected 1 or 2 as dimension argument.')
+	
+	local array
+	if dimension == 1 then
+		array = {}
+	else
+		array = grid.new()
+	end
+	
 	local mapwidth,mapheight = 0,0
-	local maparray = {}
 	for x,y,v in self.tilegrid:iterate() do
 		if v.index then
 			mapwidth = math.max(mapwidth,x)
@@ -104,11 +114,18 @@ function map:export()
 			local t    = grid.get(self.tilegrid,x,y)
 			local i    = x+ioffset
 			local index= t and t.index or 0
-			maparray[i]= index
+			if dimension == 1 then 
+				array[i]=index 
+			else 
+				local i,j = x,y
+				if reverse then i,j = j,i end
+				array:set(i,j,index)
+			end
 		end
 	end
-	maparray.width,maparray.height = mapwidth,mapheight
-	return maparray
+	array = dimension == 2 and array.grid or array
+	array.width,array.height = mapwidth,mapheight
+	return array
 end
 
 function map:setAtlasIndex(tx,ty,index,  angle,flipx,flipy)
@@ -127,7 +144,7 @@ function map:setAtlasIndex(tx,ty,index,  angle,flipx,flipy)
 		t.sx      = nil
 		t.sy      = nil
 		t.property= nil
-		t.sb:setq( t.id, dummyquad, 0,0,0,0)
+		t.sb[sbset](t.sb, t.id, dummyquad, 0,0,0,0)
 		return
 	end
 	
