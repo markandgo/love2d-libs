@@ -31,6 +31,10 @@ function box:scale(sx,sy)
 	self.height= self.height*(sy or sx)
 end
 
+function box:bbox()
+	return box.unpack(self)
+end
+
 function box:unpack()
 	return self.x,self.y,self.width,self.height
 end

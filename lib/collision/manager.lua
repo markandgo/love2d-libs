@@ -1,20 +1,26 @@
 local spatialhash= include ((...):getFolderPath() .. 'spatialhash')
+local box        = include ((...):getFolderPath() .. 'box')
+local circle     = include ((...):getFolderPath() .. 'circle')
 local class      = class 'BoxCollisionManager'
+local test_case  = {
+	box   = {box= box.testBox,    circle= box.testCircle},
+	circle= {box= circle.testBox, circle= circle.testCircle},
+}
 
 function class.init(s,cell_size,onCollision,endCollision)
-	s.boxes            = {}
+	s.shapes           = {}
 	s.collideLastUpdate= {}
 	s.spatialhash      = spatialhash.new(cell_size)
 	s.onCollision      = onCollision
 	s.endCollision     = endCollision
 end
 
-function class:addBox(box,isPassive)
-	self.boxes[box] = {box = box,isActive = not isPassive}
+function class:addShape(shape,isPassive)
+	self.shapes[shape] = {shape = shape,isActive = not isPassive}
 end
 
-function class:setActive(box,isActive)
-	self.boxes[box].isActive = isActive
+function class:setActive(shape,isActive)
+	self.shapes[shape].isActive = isActive
 end
 
 function class:update()
@@ -27,32 +33,34 @@ function class:update()
 	local collided    = {}
 	local clu         = self.collideLastUpdate
 	
-	for box,data in pairs(self.boxes) do
-		local x,y,w,h = box:unpack()
-		hash:setBox(box,x,y,w,h)
+	for shape,data in pairs(self.shapes) do
+		local x,y,w,h = shape:bbox()
+		hash:setBox(shape,x,y,w,h)
 		
-		if data.isActive then active[box] = box end		
+		if data.isActive then active[shape] = shape end		
 	end
 	
-	for box in pairs(active) do
-		local neighbors   = hash:getNeighbors(box)
-		checkedPairs[box] = {}
-		collided[box]     = {}
+	for shape in pairs(active) do
+		local neighbors   = hash:getNeighbors(shape)
+		checkedPairs[shape] = {}
+		collided[shape]     = {}
+		local shape_type    = shape:type()
 		
-		for otherbox in pairs(neighbors) do
+		for othershape in pairs(neighbors) do
+			local othershape_type = othershape:type()
 			
-			if not (checkedPairs[otherbox] and checkedPairs[otherbox][box]) then
-				local hit,dx,dy = box:testBox(otherbox:unpack())
+			if not (checkedPairs[othershape] and checkedPairs[othershape][shape]) then
+				local hit,dx,dy = test_case[shape_type][othershape_type](shape,othershape:unpack())
 								
 				if hit then
-					if oc then oc(box,otherbox,dx,dy) end
-					collided[box][otherbox] = true
+					if oc then oc(shape,othershape,dx,dy) end
+					collided[shape][othershape] = true
 					
-					if clu[box] then clu[box][otherbox] = nil end
-					if clu[otherbox] then clu[otherbox][box] = nil end
+					if clu[shape] then clu[shape][othershape] = nil end
+					if clu[othershape] then clu[othershape][shape] = nil end
 				end
 				
-				checkedPairs[box][otherbox] = true
+				checkedPairs[shape][othershape] = true
 			end
 		end
 		
@@ -61,9 +69,9 @@ function class:update()
 	if ec then 
 		local separatedPairs = clu
 		
-		for box,collided in pairs(separatedPairs) do
-			for otherbox in pairs(collided) do
-				ec(box,otherbox)
+		for shape,collided in pairs(separatedPairs) do
+			for othershape in pairs(collided) do
+				ec(shape,othershape)
 			end
 		end
 		
