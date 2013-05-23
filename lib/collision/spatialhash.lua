@@ -12,10 +12,8 @@ end
 
 local function removeFromGrid(self,name)
 	local t      = self.boxes[name]
-	local x,y    = t[1],t[2]
-	local x2,y2  = t[3],t[4]
-	local gx,gy  = toGrid(x,y,self.width,self.height)
-	local gx2,gy2= toGrid(x2,y2,self.width,self.height)
+	local gx,gy  = t[1],t[2]
+	local gx2,gy2= t[3],t[4]
 	for gx,gy,v in grid.rectangle(self,gx,gy,gx2,gy2,true) do
 		v[name] = nil
 	end
@@ -29,6 +27,7 @@ local function addToGrid(self,name,x,y,w,h)
 		if not v then v = {}; grid.set(self,gx,gy,v) end
 		v[name] = name		
 	end
+	return gx,gy,gx2,gy2
 end
 
 --[[
@@ -53,11 +52,11 @@ end
 function hash:setBox(name,x,y,w,h)
 	local t = self.boxes[name]
 	if t then removeFromGrid(self,name) end
-	addToGrid(self,name,x,y,w,h)
+	local gx,gy,gx2,gy2 = addToGrid(self,name,x,y,w,h)
 	if t then 
-		t[1],t[2],t[3],t[4] = x,y,x+w,y+h
+		t[1],t[2],t[3],t[4] = gx,gy,gx2,gy2
 	else
-		self.boxes[name] = {x,y,x+w,y+h}
+		self.boxes[name] = {gx,gy,gx2,gy2}
 	end
 	return self
 end
@@ -77,10 +76,8 @@ end
 function hash:getNeighbors(name)
 	local list   = {}
 	local t      = self.boxes[name]
-	local x,y    = t[1],t[2]
-	local x2,y2  = t[3],t[4]
-	local gx,gy  = toGrid(x,y,self.width,self.height)
-	local gx2,gy2= toGrid(x2,y2,self.width,self.height)
+	local gx,gy  = t[1],t[2]
+	local gx2,gy2= t[3],t[4]
 	for gx,gy,v in grid.rectangle(self,gx,gy,gx2,gy2,true) do
 		for obj in pairs(v) do
 			list[obj] = obj						

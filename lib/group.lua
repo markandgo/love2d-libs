@@ -1,18 +1,14 @@
 local __settings = {__index = function(t,k) rawset(t,k,{}) return t[k] end,__mode= 'k'}
 
-local t   = setmetatable({},{__call = function(self,...) return self.new(...) end})
+local t   = class 'group'
 t.__call  = function(self,name) return t.getLayer(self,name) end
-t.__index = t
 
-function t.new()
-	local d = {
-		layerByOrder= {},
-		layerByName = {},
-		settings    = setmetatable({},__settings),
-		x           = 0,
-		y           = 0,
-	}
-	return setmetatable(d,t)
+function t:init()
+	self.layerByOrder= {}
+	self.layerByName = {}
+	self.settings    = setmetatable({},__settings)
+	self.x           = 0
+	self.y           = 0
 end
 
 function t:insert(name,layer,xtransfactor,ytransfactor,isDrawable)
@@ -39,11 +35,6 @@ function t:remove(name)
 	for i,l in ipairs(self.layerByOrder) do
 		if l == layer then table.remove(self.layerByOrder,i) return end
 	end
-end
-
-function t:removeAll()
-	self.layerByOrder = {}
-	self.layerByName  = {}
 end
 
 function t:swap(name1,name2)

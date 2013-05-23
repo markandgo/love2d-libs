@@ -24,6 +24,7 @@ local module = {
 	gamestate= require(dir .. '.gamestate'),
 	timer    = require(dir .. '.timer'),
 	resources= require(dir .. '.resources'),
+	group    = require(dir .. '.group'),
 }
 
 -- ##########################
