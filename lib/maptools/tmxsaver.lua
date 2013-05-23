@@ -186,11 +186,11 @@ local makeAndInsertTileLayer = function(drawlist,i,layer,layers,atlasDone)
 	end
 	local formatteddata = {__element = 'data',encoding = 'csv'; table.concat(rows,',\n')}
 	
-	local _,name = getPathComponents(drawlist:getLayerPath(i))
+	local name = drawlist:getLayerName(layer)
 	local formattedlayer = {
 		__element= 'layer',
 		name     = name or ('layer '..i),
-		visible  = drawlist:isDrawable(i) and 1 or 0,
+		visible  = drawlist:isDrawable(name) and 1 or 0,
 		data     = formatteddata,
 		width    = data.width,
 		height   = data.height,
@@ -261,7 +261,7 @@ end
 local function prepareTable(drawlist,path)
 	local orientation = 'orthogonal'
 	local dummylayer
-	for i,layer in pairs(drawlist.layers) do
+	for i,layer in pairs(drawlist.layerByOrder) do
 		local meta = getmetatable(layer)
 		if meta then 
 			local class = meta.__index
@@ -290,7 +290,7 @@ local function prepareTable(drawlist,path)
 	local layers    = {}
 	local firstgid  = 1
 	
-	for i,layer in ipairs(drawlist.layers) do
+	for i,layer in ipairs(drawlist.layerByOrder) do
 		local meta  = getmetatable(layer)
 		local class = meta and meta.__index
 		if class == map or class == isomap then
