@@ -40,7 +40,7 @@ function t:insert(layer,i,xtransfactor,ytransfactor,isDrawable)
 end
 
 function t:remove(i)
-	table.remove(self.layers,i)
+	return table.remove(self.layers,i)
 end
 
 function t:removeAll()
@@ -103,7 +103,7 @@ function t:getTransFactors(i)
 	return self.settings[self.layers[i]].xtransfactor, self.settings[self.layers[i]].ytransfactor
 end
 
-function t:iterate() do
+function t:ipairs()
 	return ipairs(self.layers)
 end
 
