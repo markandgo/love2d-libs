@@ -15,13 +15,42 @@ function class.init(s,cell_size,onCollision,endCollision)
 	s.endCollision     = endCollision
 end
 
-function class:addShape(shape,type)
-	self.shapes[shape] = {shape = shape,isActive = type ~= 'passive'}
+function class:addShape(shape,type,group,noclip)
+	self.shapes[shape] = {
+		shape   = shape,
+		isActive= type ~= 'passive', 
+		groups  = (function() local t = {}; if group then t[group] = true end return t end)(),
+		noclip  = noclip,
+	}
+	
 end
 
 function class:removeShape(shape)
 	self.shapes[shape] = nil
 	self.spatialhash:unsetBox(shape)
+end
+
+function class:group(name,shapes)
+	for _,shape in pairs(shapes) do
+		self.shapes[shape].groups[name] = true
+	end
+end
+
+function class:ungroup(name,shapes)
+	for _,shape in pairs(shapes) do
+		self.shapes[shape].groups[name] = nil
+	end
+end
+
+function class:getGroup(shape)
+	local groups = self.shapes[shape].groups
+	local group
+	local recur
+	recur = function()
+		group = next(groups,group)
+		if group then return group,recur() end
+	end
+	return recur()
 end
 
 function class:clear()
@@ -36,6 +65,20 @@ function class:isActive(shape)
 	return self.shapes[shape].isActive
 end
 
+function class:setNoClip(shape,bool)
+	self.shapes[shape].noclip = bool
+end
+
+function class:hasNoClip(shape)
+	return self.shapes[shape].noclip
+end
+
+local isInGroup = function(shape_groups,othershape_groups)
+	for group in pairs(shape_groups) do
+		if othershape_groups[group] then return true end
+	end
+end
+
 function class:update(dt)
 	local gd          = self.getDimensions
 	local oc          = self.onCollision
@@ -45,12 +88,13 @@ function class:update(dt)
 	local checkedPairs= {}
 	local collided    = {}
 	local clu         = self.collideLastUpdate
+	local shapes      = self.shapes
 	
 	for shape,data in pairs(self.shapes) do
 		local x,y,w,h = shape:bbox()
 		hash:setBox(shape,x,y,w,h)
 		
-		if data.isActive then active[shape] = shape end		
+		if data.isActive and not data.noclip then active[shape] = shape end		
 	end
 	
 	for shape in pairs(active) do
@@ -58,11 +102,19 @@ function class:update(dt)
 		checkedPairs[shape] = {}
 		collided[shape]     = {}
 		local shape_type    = shape:type()
+		local shape_groups  = shapes[shape].groups
 		
 		for othershape in pairs(neighbors) do
-			local othershape_type = othershape:type()
+			local othershape_type  = othershape:type()
+			local os_data          = shapes[othershape]
+			local os_groups        = os_data.groups
+			local os_noclip        = os_data.noclip
 			
-			if not (checkedPairs[othershape] and checkedPairs[othershape][shape]) then
+			if not (checkedPairs[othershape] and 
+				checkedPairs[othershape][shape] or 
+				isInGroup(shape_groups,os_groups) or
+				os_noclip) then
+				
 				local hit,dx,dy = test_case[shape_type][othershape_type](shape,othershape:unpack())
 								
 				if hit then
