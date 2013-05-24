@@ -76,6 +76,10 @@ function map:setLayerProperty(name,value)
 	self.properties[name] = value
 end
 
+function drawlist:getLayerName(name)
+	return self.layernames[name]
+end
+
 function drawlist:getAtlas(name)
 	return self.atlases[name]
 end
@@ -392,17 +396,17 @@ local function getTilesetAndMap(gid,tmxmap,layer)
 	map.imagepath = tileset.imagepath
 	map.properties= layer.properties
 	map.opacity   = layer.opacity
-	map:setViewRange(1,1,tmxmap.width,tmxmap.height)	
+	map:setViewRange(1,1,tmxmap.width,tmxmap.height)
 	map:setAtlasPath(tileset.name..'.atlas')
 	return tileset,map
 end
 
--- local function storeLayersByName(tmxmap,dl)
-	-- dl.layernames = {}
-	-- for i,layer in pairs(tmxmap.layers) do
-		-- dl.layernames[layer.name] = layer
-	-- end
--- end
+local function storeLayersByName(tmxmap,dl)
+	dl.layernames = {}
+	for i,layer in pairs(tmxmap.layers) do
+		dl.layernames[layer.name] = layer
+	end
+end
 
 local tmxToTable = function(filename)
 	local h        = newHandler()
@@ -441,7 +445,6 @@ local worker = function(filename,mode,chunkSize)
 	for i,layer in ipairs(tmxmap.layers) do
 		local isTileLayer = layer.data
 		local name        = layer.name ~= '' and layer.name or 'layer'..i
-		
 		if isTileLayer then
 			local tileset,map,firstgid
 			for gid,x,y,angle,flipx,flipy in streamData(tmxmap,layer) do
@@ -450,8 +453,8 @@ local worker = function(filename,mode,chunkSize)
 						tileset,map = getTilesetAndMap(gid,tmxmap,layer)
 						firstgid    = tileset.firstgid
 						
-						dl:insert( name, map,nil,1,1,layer.visible ~= 0) 
-						dl:setLayerPath(name,name..'.map')
+						dl:insert(map,nil,1,1,layer.visible ~= 0)
+						dl:setLayerPath(dl:totalLayers(),name..'.map')
 					end
 					local index = gid-firstgid+1
 					map:setAtlasIndex(x,y,index,angle,flipx,flipy)
@@ -464,7 +467,7 @@ local worker = function(filename,mode,chunkSize)
 			end
 		else
 			if layer.image then buildImage(tmxmap,layer) else layer.__element = 'objectgroup' end
-			dl:insert(name,layer)
+			dl:insert(layer)
 			chunkCount = chunkCount + 1
 		end
 		
@@ -473,7 +476,7 @@ local worker = function(filename,mode,chunkSize)
 			coroutine.yield() 
 		end
 	end
-	-- storeLayersByName(tmxmap,dl)
+	storeLayersByName(tmxmap,dl)
 	
 	if mode == 'all' then return dl end
 end

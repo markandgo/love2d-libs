@@ -189,20 +189,19 @@ function l.saveDrawList(drawlist,path)
 	t.x,t.y      = drawlist:getTranslation()
 	local layers = t.layers
 	
-	for i,layer in pairs(drawlist.layerByOrder) do
+	for i,layer in pairs(drawlist.layers) do
 		local settings = drawlist.settings[layer]
-		local path     = settings.path or name..'_layer_'..i..DEFAULT_MAP_EXTENSION
+		local mapname  = settings.path or name..'_layer_'..i..DEFAULT_MAP_EXTENSION
 		layers[i] = {
 			isDrawable  = settings.isDrawable,
 			xtransfactor= settings.xtransfactor,
 			ytransfactor= settings.ytransfactor,
-			name        = settings.name,
-			path        = path,
+			path        = mapname,
 			isDummy     = nil,
 		}
 		local class    = getmetatable(layer)
 		if class == map or class == isomap then
-			local mappath = removeUpDirectory(dir..path)
+			local mappath = removeUpDirectory(dir..mapname)
 			l.saveMap(layer,mappath)
 		else
 			layers[i].isDummy = true
@@ -229,8 +228,8 @@ function l.loadDrawList(path)
 			local mappath = removeUpDirectory(dir..layer.path)
 			newlayer      = l.loadMap(mappath)
 		end
-		dl:insert(layer.name,newlayer ,layer.xtransfactor,layer.ytransfactor,layer.isDrawable)
-		dl:setLayerPath(layer.name,layer.path)
+		dl:insert(newlayer,i,layer.xtransfactor,layer.ytransfactor,layer.isDrawable)
+		dl:setLayerPath(i,layer.path)
 	end
 	return dl
 end
