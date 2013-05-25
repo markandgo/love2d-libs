@@ -25,6 +25,7 @@ local module = {
 	timer    = require(dir .. '.timer'),
 	resources= require(dir .. '.resources'),
 	group    = require(dir .. '.group'),
+	install  = require(dir .. '.install'),
 }
 
 -- ##########################
@@ -42,13 +43,5 @@ include(dir .. '.gui',module.gui)
 
 module.managers = {}
 include(dir .. '.managers',module.managers)
-
--- ##########################
--- INSTALLATION
--- ##########################
-
-module.install = function()
-	module.gamestate:register()
-end
 
 return module
