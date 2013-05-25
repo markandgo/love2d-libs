@@ -1,13 +1,13 @@
 local spatialhash= include ((...):getFolderPath() .. 'spatialhash')
 local box        = include ((...):getFolderPath() .. 'box')
 local circle     = include ((...):getFolderPath() .. 'circle')
-local class      = class 'BoxCollisionManager'
+local manager    = class 'BoxCollisionManager'
 local test_case  = {
 	box   = {box= box.testBox,    circle= box.testCircle},
 	circle= {box= circle.testBox, circle= circle.testCircle},
 }
 
-function class.init(s,cell_size,onCollision,endCollision)
+function manager.init(s,cell_size,onCollision,endCollision)
 	s.shapes           = {}
 	s.collideLastUpdate= {}
 	s.spatialhash      = spatialhash.new(cell_size)
@@ -15,7 +15,7 @@ function class.init(s,cell_size,onCollision,endCollision)
 	s.endCollision     = endCollision
 end
 
-function class:addShape(shape,type,group,noclip)
+function manager:addShape(shape,type,group,noclip)
 	self.shapes[shape] = {
 		shape   = shape,
 		isActive= type ~= 'passive', 
@@ -25,24 +25,24 @@ function class:addShape(shape,type,group,noclip)
 	
 end
 
-function class:removeShape(shape)
+function manager:removeShape(shape)
 	self.shapes[shape] = nil
 	self.spatialhash:unsetBox(shape)
 end
 
-function class:group(name,shapes)
+function manager:group(name,shapes)
 	for _,shape in pairs(shapes) do
 		self.shapes[shape].groups[name] = true
 	end
 end
 
-function class:ungroup(name,shapes)
+function manager:ungroup(name,shapes)
 	for _,shape in pairs(shapes) do
 		self.shapes[shape].groups[name] = nil
 	end
 end
 
-function class:getGroup(shape)
+function manager:getGroup(shape)
 	local groups = self.shapes[shape].groups
 	local group
 	local recur
@@ -53,23 +53,23 @@ function class:getGroup(shape)
 	return recur()
 end
 
-function class:clear()
-	class.init(self, self.spatialhash:getCellSize(), self.onCollision, self.endCollision)
+function manager:clear()
+	manager.init(self, self.spatialhash:getCellSize(), self.onCollision, self.endCollision)
 end
 
-function class:setActive(shape,isActive)
+function manager:setActive(shape,isActive)
 	self.shapes[shape].isActive = isActive
 end
 
-function class:isActive(shape)
+function manager:isActive(shape)
 	return self.shapes[shape].isActive
 end
 
-function class:setNoClip(shape,bool)
+function manager:setNoClip(shape,bool)
 	self.shapes[shape].noclip = bool
 end
 
-function class:hasNoClip(shape)
+function manager:hasNoClip(shape)
 	return self.shapes[shape].noclip
 end
 
@@ -79,7 +79,7 @@ local isInGroup = function(shape_groups,othershape_groups)
 	end
 end
 
-function class:update(dt)
+function manager:update(dt)
 	local gd          = self.getDimensions
 	local oc          = self.onCollision
 	local ec          = self.endCollision
@@ -145,4 +145,4 @@ function class:update(dt)
 	self.collideLastUpdate = collided
 end
 
-return class
+return manager
