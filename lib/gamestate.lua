@@ -1,4 +1,6 @@
 local gamestate = class 'gamestate'
+gamestate:include(state)
+
 function gamestate:init()
 	self.global = {}
 end
@@ -22,4 +24,4 @@ function gamestate:register()
 	end
 end
 
-return gamestate() :include(state)
+return gamestate()
