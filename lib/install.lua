@@ -16,7 +16,7 @@ end
 local install = function(module)
 	local gamestate = module.gamestate
 	gamestate:register()
-	gamestate.pre.update = function(gamestate,dt)
+	gamestate.global.update = function(gamestate,dt)
 		syncGlobals(module)
 	end
 	
