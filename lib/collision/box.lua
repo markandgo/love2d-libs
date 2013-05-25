@@ -91,8 +91,8 @@ function box:testBox(bx,by,bw,bh)
 	local x2,y2   = x+w,y+h
 	local bx2,by2 = bx+bw,by+bh
 	if x2 > bx and x < bx2 and y2 > by and y < by2 then
-		cx,cy   = x+w/2,y+h/2
-		cbx,cby = bx+bw/2,by+bh/2
+		local cx,cy  = x+w/2,y+h/2
+		local cbx,cby= bx+bw/2,by+bh/2
 		
 		local dx,dy = 0,0
 		
