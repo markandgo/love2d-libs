@@ -26,3 +26,18 @@ end
 function string:getFolderPath()
 	return self:match('^(.-)[^%.\\/]*$')
 end
+
+function string:lines()
+	local index = 1
+	local done
+	return function()
+		if done then return end
+		local i,j,line = self:find( '([^\n]-)\n', index )
+		if line then 
+			index = j+1
+			return line
+		end
+		done = true
+		return self:sub(index)
+	end
+end
