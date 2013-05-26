@@ -26,6 +26,7 @@ local module = {
 	resources= require(dir .. '.resources'),
 	group    = require(dir .. '.group'),
 	install  = require(dir .. '.install'),
+	console  = require(dir .. '.console'),
 }
 
 -- ##########################
