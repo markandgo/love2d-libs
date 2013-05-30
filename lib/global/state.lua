@@ -1,6 +1,6 @@
 state = {}
 
-function state.included(state,self)
+function state.init(self)
 	self.__states = self.__states or {}
 	local oldmeta = getmetatable(self)
 	setmetatable(self.__states,oldmeta)

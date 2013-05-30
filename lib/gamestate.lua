@@ -1,7 +1,7 @@
 local gamestate = class 'gamestate'
-gamestate:include(state)
 
 function gamestate:init()
+	class.mixin(self,state)
 	self.global = {}
 end
 

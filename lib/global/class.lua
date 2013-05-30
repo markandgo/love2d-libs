@@ -27,18 +27,17 @@ function base:extend(parent)
 	return setmetatable(self,parent)
 end
 
-function base:include(source)
-	local meta  = getmetatable(source) 
+function base:mixin(source)
+	local meta = getmetatable(source)
 	local index = meta and meta.__index
-	if index then base.include(self,index) end
 	
+	if index then base.mixin(self,index) end
+
 	for i,v in pairs(source) do
-		if type(v) == 'function' then
-			self[i] = v
-		end
+		self[i] = v
 	end
 	
-	if type(source.included) == 'function' then source:included(self) end
+	if source.init then source.init(self) end
 	
 	return self
 end
@@ -52,10 +51,11 @@ end
 
 class = setmetatable({},{__call = function(_,name) return new(name) end})
 
-function class.extend(name,parent)
-	return class(name):extend(parent)
+function class.extend(child,parent)
+	if type(child) == 'string' then return class(child):extend(parent) end
+	base.extend(child,parent)
 end
 
-function class.include(destination,source)
-	base.include(destination,source)
+function class.mixin(destination,source)
+	base.mixin(destination,source)
 end
