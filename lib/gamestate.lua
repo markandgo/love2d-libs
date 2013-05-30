@@ -1,4 +1,4 @@
-local gamestate = class 'gamestate'
+local gamestate = class 'Gamestate'
 
 function gamestate:init()
 	class.mixin(self,state)

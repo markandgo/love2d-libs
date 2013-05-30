@@ -1,7 +1,7 @@
 local abs   = math.abs
 local rect  = love.graphics.rectangle
 
-local box  = class 'box'
+local box  = class 'Box'
 
 function box:init(x,y,w,h)
 	assert(w > -1 and h > -1, 'Width and height must be non-negative!')

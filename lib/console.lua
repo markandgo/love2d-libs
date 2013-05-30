@@ -2,7 +2,7 @@ local path     = (...):match('^.+[%.\\/]') or ''
 local fontpath = path:gsub('%.','/')..'/assets/DejaVuSansMono.ttf'
 local monoFont = love.graphics.newFont(fontpath,12)
 
-local console = class 'console'
+local console = class 'Console'
 
 function console:init(chars_width,chars_height, history_size, color,font)
 	local t = self

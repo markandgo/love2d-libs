@@ -3,7 +3,7 @@ local min  = math.min
 local max  = math.max
 local abs  = math.abs
 
-local circle = class 'circle'
+local circle = class 'Circle'
 
 circle.init = function(self,x,y,r)
 	local a = 

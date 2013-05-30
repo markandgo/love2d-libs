@@ -1,6 +1,6 @@
 -- simple class
 -------------------------------------------------
-local base    = {__type = 'object'}
+local base    = {__type = 'Object'}
 base.__index  = base
 
 function base.type(obj)

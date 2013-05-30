@@ -1,4 +1,4 @@
-local t   = class 'group'
+local t   = class 'Group'
 t.__call  = function(self,name) return t.members[name] end
 
 function t:init()
