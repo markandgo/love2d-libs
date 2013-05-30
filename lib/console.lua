@@ -15,7 +15,7 @@ function console:init(chars_width,chars_height, history_size, color,font)
 	t.row_start   = nil
 end
 
-function console.setWindow(row_start,)
+function console.setWindow(row_start)
 
 end
 
