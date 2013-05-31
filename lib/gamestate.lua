@@ -6,7 +6,7 @@ function gamestate:init()
 end
 
 function gamestate:register()
-	for i,callback in pairs(love.handlers) do
+	for callback in pairs(love.handlers) do
 		love[callback] = function(...)
 			if self[callback] then self[callback](self,...) end
 			if self.global[callback] then self.global[callback](self,...) end
