@@ -26,7 +26,6 @@ local module = {
 	resources= require(dir .. '.resources'),
 	group    = require(dir .. '.group'),
 	install  = require(dir .. '.install'),
-	console  = require(dir .. '.console'),
 }
 
 -- ##########################
@@ -44,5 +43,8 @@ include(dir .. '.gui',module.gui)
 
 module.managers = {}
 include(dir .. '.managers',module.managers)
+
+module.console = {}
+include(dir .. '.console',module.console)
 
 return module
