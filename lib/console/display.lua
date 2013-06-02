@@ -11,7 +11,7 @@ local has_canvas_support = love.graphics.isSupported 'canvas'
 local default_text_color = {255,255,255,255}
 local default_bg_color   = {64,64,64,192}
 
-local color_cache = {}
+local color_cache = setmetatable({},{__mode = 'v'})
 
 local wrapDraw = function(draw,...)
 	local r,g,b,a  = love.graphics.getColor()
