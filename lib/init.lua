@@ -12,6 +12,7 @@ require(dir .. '.global.state')
 require(dir .. '.global.string+')
 require(dir .. '.global.util')
 require(dir .. '.global.vector')
+require(dir .. '.global.utf8')
 
 -- ##########################
 -- SINGLE
