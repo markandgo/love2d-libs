@@ -22,9 +22,9 @@ THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 local lg           = love.graphics
 local floor        = math.floor
 local chunkpatterns= {
-	word    = '(%S+)',
-	newline = '(\n)',
-	space   = '([^%S\n]+)',
+	word    = '^(%S+)',
+	newline = '^(\n)',
+	space   = '^([^%S\n]+)',
 }
 
 local START = '<'
