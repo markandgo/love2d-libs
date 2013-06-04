@@ -45,7 +45,6 @@ include(dir .. '.gui',module.gui)
 module.managers = {}
 include(dir .. '.managers',module.managers)
 
-module.console = {}
-include(dir .. '.console',module.console)
+module.console = include(dir .. '.console',module.console)
 
 return module
