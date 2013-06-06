@@ -248,6 +248,9 @@ function display:clear(range, char,text_color,bg_color)
 	if not range then x,y,x2,y2 = 1,1,cw,ch
 	else x,y,x2,y2 = range[1],range[2],range[3],range[4] end
 	
+	assertBounds(x,y,cw,ch)
+	assertBounds(x2,y2,cw,ch)
+	
 	if x == 1 and y == 1 and x2 == cw and y2 == ch then
 		bg_color   = bg_color or self.bg_color
 		text_color = text_color or self.text_color
@@ -255,9 +258,6 @@ function display:clear(range, char,text_color,bg_color)
 		display.init(self,cw,ch, font,text_color,bg_color)
 		if not char then return end
 	end
-	
-	assertBounds(x,y,cw,ch)
-	assertBounds(x2,y2,cw,ch)
 	
 	local matrix = self.chars_matrix
 	
