@@ -18,7 +18,7 @@ end
 
 function base.__call(class,...)
 	local obj = {}
-	if class.init then obj = class.init(obj,...) or obj end
+	if class.init then class.init(obj,...)end
 	return setmetatable(obj,class)
 end
 

@@ -6,13 +6,9 @@ local abs  = math.abs
 local circle = class 'Circle'
 
 circle.init = function(self,x,y,r)
-	local a = 
-	{
-		x       = x,
-		y       = y,
-		radius  = r,
-	}
-	return a
+	self.x       = x
+	self.y       = y
+	self.radius  = r
 end
 
 circle.bbox = function(self)
