@@ -213,11 +213,6 @@ function display:write(str,x,y, text_color,bg_color)
 	local curr_x,curr_y = x,y
 	local matrix = self.chars_matrix
 	
-	if has_canvas_support then
-		local old_font = lg.getFont()
-		lg.setFont(self.font)
-	end
-
 	while curr_index < len+1 do
 		local char = str:sub(curr_index,curr_index)
 		matrix[curr_x] = matrix[curr_x] or {}
@@ -233,11 +228,7 @@ function display:write(str,x,y, text_color,bg_color)
 		end
 		if curr_y > self.chars_height then break end
 		curr_index = curr_index + 1
-	end
-	
-	if has_canvas_support then
-		if old_font then lg.setFont(old_font) end
-	end
+	end	
 end
 
 function display:clear(range, char,text_color,bg_color)
