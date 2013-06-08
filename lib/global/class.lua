@@ -27,7 +27,7 @@ function base:extend(parent)
 	return setmetatable(self,parent)
 end
 
-function base:mixin(source)
+function base:mixin(source,...)
 	local meta = getmetatable(source)
 	local index = meta and meta.__index
 	
@@ -37,7 +37,7 @@ function base:mixin(source)
 		self[i] = v
 	end
 	
-	if source.init then source.init(self) end
+	if source.init then source.init(self,...) end
 	
 	return self
 end
