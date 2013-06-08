@@ -28,14 +28,18 @@ function base:extend(parent)
 end
 
 function base:mixin(source,...)
-	local meta = getmetatable(source)
-	local index = meta and meta.__index
+	local recur 
+	recur = function(self,source)
+		local meta = getmetatable(source)
+		local index = meta and meta.__index
+		
+		if index then recur(self,index) end
 	
-	if index then base.mixin(self,index) end
-
-	for i,v in pairs(source) do
-		self[i] = v
+		for i,v in pairs(source) do
+			self[i] = v
+		end
 	end
+	recur(self,source)
 	
 	if source.init then source.init(self,...) end
 	
