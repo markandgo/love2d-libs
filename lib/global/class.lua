@@ -4,14 +4,14 @@ local base    = {__type = 'Object'}
 base.__index  = base
 
 function base.type(obj)
-	return getmetatable(obj).__type
+	return obj.__type
 end
 
 function base.typeOf(obj,name)
-	local parent = getmetatable(obj)
-	while parent do
-		if parent.__type == name then return true end
-		parent = getmetatable(parent)
+	while obj do
+		if obj.__type == name then return true end
+		local meta = getmetatable(obj)
+		obj = meta and meta.__index
 	end
 	return false
 end
@@ -28,11 +28,11 @@ function base:extend(parent)
 end
 
 function base:mixin(source,...)
-	local recur 
+	local recur
 	recur = function(self,source)
 		local meta = getmetatable(source)
 		local index = meta and meta.__index
-		
+
 		if index then recur(self,index) end
 	
 		for i,v in pairs(source) do
