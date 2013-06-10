@@ -103,7 +103,7 @@ function t:getTransFactors(i)
 	return self.settings[self.layers[i]].xtransfactor, self.settings[self.layers[i]].ytransfactor
 end
 
-function t:ipairs()
+function t:iterate()
 	return ipairs(self.layers)
 end
 
