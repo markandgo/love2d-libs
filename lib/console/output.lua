@@ -2,7 +2,7 @@ local output = class 'Output'
 
 function output:init(chars_width,max_size)
 	self.lines       = {}
-	self.max_size    = max_size or math.huge
+	self.max_size    = max_size or 100
 	self.buffer_size = 0
 	self.chars_width = chars_width or math.huge
 end
