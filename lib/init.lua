@@ -33,18 +33,10 @@ local module = {
 -- MULTI
 -- ##########################
 
-module.maptools = {}
-include(dir .. '.maptools',module.maptools)
-
-module.collision = {}
-include(dir .. '.collision',module.collision)
-
-module.gui = {}
-include(dir .. '.gui',module.gui)
-
-module.managers = {}
-include(dir .. '.managers',module.managers)
-
-module.console = include(dir .. '.console',module.console)
+module.maptools = include(dir .. '.maptools')
+module.collision= include(dir .. '.collision')
+module.gui      = include(dir .. '.gui')
+module.managers = include(dir .. '.managers')
+module.console  = include(dir .. '.console')
 
 return module
