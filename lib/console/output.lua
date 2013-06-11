@@ -8,12 +8,6 @@ function output:init(chars_width,max_size)
 end
 
 function output:write(str)
-	local len = #str
-	local new_buffer_size = self.buffer_size+len
-	while new_buffer_size > self.max_size do
-		new_buffer_size = new_buffer_size - #table.remove(self.lines,1)
-	end
-	self.buffer_size = new_buffer_size
 	for line in str:lines() do
 		repeat
 			local newline = line:sub(1,self.chars_width)
@@ -21,9 +15,17 @@ function output:write(str)
 			line = line:sub(self.chars_width+1)
 		until line == ''
 	end
+	
+	local len = #str
+	local new_buffer_size = self.buffer_size+len
+	while new_buffer_size > self.max_size do
+		new_buffer_size = new_buffer_size - #table.remove(self.lines,1)
+	end
+	self.buffer_size = new_buffer_size
 end
 
 function output:getLine(row)
+	if row < 0 then row = #self.lines+1+row end
 	return self.lines[row]
 end
 
