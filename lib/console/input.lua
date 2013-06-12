@@ -74,7 +74,7 @@ function input:keypressed(key,unicode)
 		input.setCursorPos(self,1)
 	elseif key == 'end' then
 		input.setCursorPos(self,-1)
-	elseif unicode > 31 and unicode < 256 then
+	elseif unicode > 31 and unicode < 127 then
 		table.insert(self.chars,self.cursor_pos,string.char(unicode))
 		self.cursor_pos = self.cursor_pos + 1
 	end
