@@ -4,6 +4,8 @@
 -- * string.utf8len(s)
 -- * string.utf8sub(s, i, j)
 -- * string.utf8reverse(s)
+-- * string.utf8char(unicode)
+-- * string.utf8unicode(s, i, j)
 --
 -- If utf8data.lua (containing the lower<->upper case mappings) is loaded, these
 -- additional functions are available:
@@ -280,6 +282,79 @@ local function utf8reverse (s)
 	return newstr
 end
 
+-- http://en.wikipedia.org/wiki/Utf8
+-- http://developer.coronalabs.com/code/utf-8-conversion-utility
+local function utf8char(unicode)
+	if unicode <= 0x7F then return string.char(unicode) end
+	
+	if (unicode <= 0x7FF) then
+		local Byte0 = 0xC0 + math.floor(unicode / 0x40);
+		local Byte1 = 0x80 + (unicode % 0x40);
+		return string.char(Byte0, Byte1);
+	end;
+	
+	if (unicode <= 0xFFFF) then
+		local Byte0 = 0xE0 +  math.floor(unicode / 0x1000);
+		local Byte1 = 0x80 + (math.floor(unicode / 0x40) % 0x40);
+		local Byte2 = 0x80 + (unicode % 0x40);
+		return string.char(Byte0, Byte1, Byte2);
+	end;
+	
+	if (unicode <= 0x10FFFF) then
+		local code = unicode
+		local Byte3= 0x80 + (code % 0x40);
+		code       = math.floor(code / 0x40)
+		local Byte2= 0x80 + (code % 0x40);
+		code       = math.floor(code / 0x40)
+		local Byte1= 0x80 + (code % 0x40);
+		code       = math.floor(code / 0x40)  
+		local Byte0= 0xF0 + code;
+		
+		return string.char(Byte0, Byte1, Byte2, Byte3);
+	end;
+	
+	error 'Unicode cannot be greater than U+10FFFF!'
+end
+
+local shift_6  = 2^6
+local shift_12 = 2^12
+local shift_18 = 2^18
+
+local utf8unicode
+utf8unicode = function(str, i, j, byte_pos)
+	i = i or 1
+	j = j or i
+	
+	if i > j then return end
+	
+	byte_pos = byte_pos or 1
+	
+	local bytes = utf8charbytes(str,byte_pos)
+	local char  = utf8sub(str,i,j)
+	local unicode
+	
+	if bytes == 1 then unicode = string.byte(char) end
+	if bytes == 2 then
+		local byte0,byte1 = string.byte(char,1,2)
+		local code0,code1 = byte0-0xC0,byte1-0x80
+		unicode = code0*shift_6 + code1
+	end
+	if bytes == 3 then
+		local byte0,byte1,byte2 = string.byte(char,1,3)
+		local code0,code1,code2 = byte0-0xE0,byte1-0x80,byte2-0x80
+		unicode = code0*shift_12 + code1*shift_6 + code2
+	end
+	if bytes == 4 then
+		local byte0,byte1,byte2,byte3 = string.byte(char,1,4)
+		local code0,code1,code2,code3 = byte0-0xF0,byte1-0x80,byte2-0x80,byte3-0x80
+		unicode = code0*shift_18 + code1*shift_12 + code2*shift_6 + code3
+	end
+	
+	return unicode,utf8unicode(str, i+1, j, byte_pos+bytes)
+end
+
 string.utf8len       = utf8len
 string.utf8sub       = utf8sub
 string.utf8reverse   = utf8reverse
+string.utf8char      = utf8char
+string.utf8unicode   = utf8unicode
