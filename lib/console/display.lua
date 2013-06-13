@@ -203,14 +203,30 @@ end
 -- #####################################
 -- MAIN
 -- #####################################
-function display:write(str,x,y, text_color,bg_color)
+function display:write(str,x,y, reverse, text_color,bg_color)
 	x,y = x or 1,y or 1
 	
 	assertBounds(x,y,self.chars_width,self.chars_height)
+	local curr_x,curr_y= x,y
+	local len          = #str
+	local curr_index   = 1
 	
-	local len = #str
-	local curr_index = 1
-	local curr_x,curr_y = x,y
+	if reverse then
+		local offset = (y-1)*self.chars_width + x - len
+		if offset < 0 then curr_index = curr_index - offset end
+		local start   = offset < 0 and 1 or offset+1
+		curr_x,curr_y = 0,1
+		local remain  = start
+		while true do
+			remain = remain - self.chars_width
+			if remain < 1 then 
+				curr_x = remain + self.chars_width 
+				break
+			end
+			curr_y = curr_y + 1
+		end
+	end
+	
 	local matrix = self.chars_matrix
 	
 	while curr_index < len+1 do
