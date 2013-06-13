@@ -52,4 +52,16 @@ function output:getMaxSize()
 	return self.max_size
 end
 
+function output:setMaxSize(max_size)
+	self.max_size = max_size or 100
+end
+
+function output:setWidth(chars_width)
+	self.chars_width = chars_width
+end
+
+function output:getWidth()
+	return self.chars_width
+end
+
 return output
