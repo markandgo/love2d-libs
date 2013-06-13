@@ -29,15 +29,11 @@ end
 
 function string:lines()
 	local index = 1
-	local done
+	local len   = #self
 	return function()
-		if done then return end
-		local i,j,line = self:find( '([^\n]-)\n', index )
-		if line then 
-			index = j+1
-			return line
-		end
-		done = true
-		return self:sub(index)
+		if index > len then return end
+		local i,j,line = self:find( '([^\r\n]*)\r?\n?', index )
+		index = j+1
+		return line
 	end
 end
