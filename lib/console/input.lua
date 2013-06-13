@@ -29,7 +29,7 @@ function input:onFlush(str)
 end
 
 function input:clear()
-	endKeypress(self)
+	self.chars      = {}
 	self.cursor_pos = 1
 end
 
@@ -63,7 +63,7 @@ function input:keypressed(key,unicode)
 	if enter[key] then
 		local str = table.concat(self.chars)
 		self:onFlush(str)
-		input.init(self,self.repeat_delay,self.repeat_interval)
+		input.clear(self)
 	elseif key == 'backspace' then
 		self.cursor_pos = self.cursor_pos-1
 		if not self.chars[self.cursor_pos] then self.cursor_pos = 1 return end
@@ -79,7 +79,7 @@ function input:keypressed(key,unicode)
 		self.cursor_pos = self.cursor_pos + 1
 	end
 	
-	if self.last_unicode ~= unicode then
+	if self.last_keypressed ~= key then
 		self.remaining_delay    = self.repeat_delay
 		self.remaining_interval = self.repeat_interval
 	end
