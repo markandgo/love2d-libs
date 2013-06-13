@@ -6,6 +6,7 @@
 -- * string.utf8reverse(s)
 -- * string.utf8char(unicode)
 -- * string.utf8unicode(s, i, j)
+-- * string.utf8gchar(s, i)
 --
 -- If utf8data.lua (containing the lower<->upper case mappings) is loaded, these
 -- additional functions are available:
@@ -175,6 +176,7 @@ end
 
 -- functions identically to string.sub except that i and j are UTF-8 characters
 -- instead of bytes
+-- also returns starting and ending byte position
 local function utf8sub (s, i, j)
 	-- argument defaults
 	j = j or -1
@@ -211,7 +213,7 @@ local function utf8sub (s, i, j)
 		end
 	end
 
-	return s:sub(startByte, endByte)
+	return s:sub(startByte, endByte), startByte, endByte
 end
 
 
@@ -327,10 +329,16 @@ utf8unicode = function(str, i, j, byte_pos)
 	
 	if i > j then return end
 	
-	byte_pos = byte_pos or 1
+	local char,bytes
 	
-	local bytes = utf8charbytes(str,byte_pos)
-	local char  = utf8sub(str,i,j)
+	if byte_pos then 
+		bytes = utf8charbytes(str,byte_pos)
+		char  = str:sub(byte_pos,byte_pos-1+bytes)
+	else
+		char,byte_pos = utf8sub(str,i,i)
+		bytes         = #char
+	end
+	
 	local unicode
 	
 	if bytes == 1 then unicode = string.byte(char) end
@@ -353,16 +361,19 @@ utf8unicode = function(str, i, j, byte_pos)
 	return unicode,utf8unicode(str, i+1, j, byte_pos+bytes)
 end
 
-local function utf8gchar(str)
-	local byte_pos = 1
-	local len      = #str
-	return function(str)
+local function utf8gchar(str, i)
+	i                = i or 1
+	local _,byte_pos = utf8sub(str,i,i)
+	local len        = #str
+	return function()
 		if byte_pos > len then return end
-		local bytes = utf8charbytes(str,byte_pos)
-		local char  = str:sub(byte_pos,byte_pos-1+bytes)
-		byte_pos    = byte_pos + bytes
-		return char
-	end,str
+		local bytes     = utf8charbytes(str,byte_pos)
+		local char_start= byte_pos
+		local char_end  = byte_pos-1+bytes
+		local char      = str:sub(char_start,char_end)
+		byte_pos        = byte_pos + bytes
+		return char, char_start, char_end
+	end
 end
 
 string.utf8len       = utf8len
