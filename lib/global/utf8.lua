@@ -353,8 +353,21 @@ utf8unicode = function(str, i, j, byte_pos)
 	return unicode,utf8unicode(str, i+1, j, byte_pos+bytes)
 end
 
+local function utf8gchar(str)
+	local byte_pos = 1
+	local len      = #str
+	return function(str)
+		if byte_pos > len then return end
+		local bytes = utf8charbytes(str,byte_pos)
+		local char  = str:sub(byte_pos,byte_pos-1+bytes)
+		byte_pos    = byte_pos + bytes
+		return char
+	end,str
+end
+
 string.utf8len       = utf8len
 string.utf8sub       = utf8sub
 string.utf8reverse   = utf8reverse
 string.utf8char      = utf8char
 string.utf8unicode   = utf8unicode
+string.utf8gchar     = utf8gchar
