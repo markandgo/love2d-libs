@@ -9,6 +9,7 @@ function input:init(repeat_delay,repeat_interval,max_history)
 	t.repeat_delay       = repeat_delay or 0.2
 	t.repeat_interval    = repeat_interval or 0.05
 	t.previous_index     = 0
+	t.previous_remember  = false -- pressing up after flushing returns to previous index
 	
 	-- PRIVATE
 	t._last_keypressed   = nil
@@ -91,6 +92,9 @@ function input:flush()
 			table.remove(self.history) 
 		end
 	end
+	if self.previous_remember then
+		self.previous_index = math.max(self.previous_index-1,0)
+	else self.previous_index = 0 end
 	if self.onFlush then self:onFlush(str) end
 	input.clear(self)
 end
